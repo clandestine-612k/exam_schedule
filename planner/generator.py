@@ -25,8 +25,10 @@
 from openai import OpenAI
 import streamlit as st
 from planner.prompt import build_prompt
+import os
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+#client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def generate_plan(exam, days, hours):
     """
