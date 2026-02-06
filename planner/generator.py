@@ -51,7 +51,7 @@ import os
 
 # Configure Gemini
 #genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-genai.configure(api_key=os.environ.get["GEMINI_API_KEY"])
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # Use a deterministic model
 model = genai.GenerativeModel(
