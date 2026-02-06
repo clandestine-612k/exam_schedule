@@ -61,16 +61,16 @@ def calculate_streak(df, active_date):
 
 
 
-st.set_page_config(page_title="AI Exam Planner", layout="wide")
-st.title("📘 AI Study Planner for Competitive Exams")
+st.set_page_config(page_title="Exam Planner", layout="wide")
+st.title("📘 Your Personalized Study Planner for Competitive Exams")
 
-# ------------------- INPUTS -------------------
 # ------------------- LOAD PLAN METADATA -------------------
 
 conn = get_db()
 meta = dict(conn.execute("SELECT key, value FROM plan_meta").fetchall())
 conn.close()
 
+# ------------------- INPUTS -------------------
 
 exam_options = ["NEET-PG", "UPSC CSE", "GATE CS", "CAT", "SSC","NEET-UG"]
 default_exam = meta.get("exam", exam_options[0])
@@ -102,7 +102,7 @@ hours_per_day = st.number_input(
 
 
 if st.button("Generate Study Plan"):
-    with st.spinner("Generating AI plan..."):
+    with st.spinner("Generating your personalized plan..."):
         try:
             raw = generate_plan(exam, days_left, hours_per_day)
             #st.code(raw)
