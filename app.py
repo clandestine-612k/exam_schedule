@@ -65,14 +65,41 @@ st.set_page_config(page_title="AI Exam Planner", layout="wide")
 st.title("📘 AI Study Planner for Competitive Exams")
 
 # ------------------- INPUTS -------------------
+# ------------------- LOAD PLAN METADATA -------------------
+
+conn = get_db()
+meta = dict(conn.execute("SELECT key, value FROM plan_meta").fetchall())
+conn.close()
+
+
+exam_options = ["NEET-PG", "UPSC CSE", "GATE CS", "CAT", "SSC","NEET-UG"]
+default_exam = meta.get("exam", exam_options[0])
 
 exam = st.selectbox(
     "Select Exam",
-    ["NEET-PG", "UPSC CSE", "GATE CS", "CAT", "SSC"]
+    exam_options,
+    index=exam_options.index(default_exam)
 )
 
-days_left = st.number_input("Days left", 1, 365, 180)
-hours_per_day = st.number_input("Study hours/day", 1, 16, 8)
+
+default_days = int(meta.get("days", 180))
+
+days_left = st.number_input(
+    "Days left",
+    min_value=1,
+    max_value=365,
+    value=default_days
+)
+
+default_hours = int(meta.get("hours", 8))
+
+hours_per_day = st.number_input(
+    "Study hours/day",
+    min_value=1,
+    max_value=16,
+    value=default_hours
+)
+
 
 if st.button("Generate Study Plan"):
     with st.spinner("Generating AI plan..."):
@@ -83,7 +110,23 @@ if st.button("Generate Study Plan"):
             rows = flatten_plan(plan)
 
             conn = get_db()
+            
             conn.execute("DELETE FROM tasks")
+            conn.execute("DELETE FROM plan_meta")
+
+            conn.execute(
+                "INSERT INTO plan_meta (key, value) VALUES (?, ?)",
+                ("exam", exam)
+            )
+            conn.execute(
+                "INSERT INTO plan_meta (key, value) VALUES (?, ?)",
+                ("days", str(days_left))
+            )
+            conn.execute(
+                "INSERT INTO plan_meta (key, value) VALUES (?, ?)",
+                ("hours", str(hours_per_day))
+            )
+
             conn.executemany(
                 "INSERT INTO tasks (date, subject, topic, hours, completed) VALUES (?,?,?,?,?)",
                 [(r["date"], r["subject"], r["topic"], r["hours"], 0) for r in rows]

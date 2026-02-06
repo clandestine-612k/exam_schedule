@@ -17,4 +17,13 @@ def get_db():
             completed INTEGER
         )
     """)
+
+        # ✅ NEW: store plan metadata
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS plan_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+    """)
+    
     return conn

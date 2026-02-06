@@ -3,3 +3,4 @@ openai
 pandas
 plotly
 python-dateutil
+google-genai
